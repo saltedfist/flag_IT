@@ -16,9 +16,8 @@ class Account(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True, autoincrement=True)
     name = DB.Column(DB.String(30), unique=True)#用户名
     phone = DB.Column(DB.String(30), default=None)#手机号
-    passwd = DB.Column(DB.String(64))#密码
+    password = DB.Column(DB.String(64))#密码
     permission = DB.Column(DB.INT, default=NONE_PERMISSION)#权限
     create_time = DB.Column(DB.DateTime)#创建时间
     status = DB.Column(DB.INT, default=0)#类型
-    team = DB.Column(DB.String(32))#所属团队
-    icon = DB.Column(DB.String(256))
+    icon = DB.Column(DB.String(256)) # 头像

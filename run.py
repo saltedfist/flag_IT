@@ -5,12 +5,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "flag项目 " \
-           "ui:贾钰.\n "\
-           "前端:王泽杰,汤礼坝.\n" \
-           "后端:叶佳,方东东\n" \
-            "爬虫:陈善涛\n"\
-           "共同完成!"
+    return"<h1>flag项目</h1><br/>" \
+           "<h3>UI:贾钰.</h3><br/> "\
+           "<h3>前端:王泽杰,汤礼坝.</h3><br/>" \
+           "<h3>后端:叶佳,方东东.</h3><br/>" \
+            "<h3>爬虫:陈善涛.<h3><br/>"
 
 #初始化数据库
 with app.app_context():
