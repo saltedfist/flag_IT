@@ -13,5 +13,7 @@ SECRET_KEY = "flag_nb_no_1"
 
 #服务器
 Debug = False
-SQLALCHEMY_DB_URI = 'mysql+pymysql://root:root@localhost:3306/'
+# 本地
+# SQLALCHEMY_DB_URI = 'mysql+pymysql://root:root@localhost:3306/'
+SQLALCHEMY_DB_URI = 'mysql+pymysql://root:root123@localhost:3306/'
 
