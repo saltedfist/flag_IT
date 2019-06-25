@@ -1,3 +1,5 @@
+import smtplib
+
 from flask import Flask
 from flask import redirect,request
 import config
@@ -9,12 +11,23 @@ def index():
            "<h3>UI:贾钰.</h3><br/> "\
            "<h3>前端:王泽杰,汤礼坝.</h3><br/>" \
            "<h3>后端:叶佳,方东东.</h3><br/>" \
-            "<h3>爬虫:陈善涛.<h3><br/>"
+            "<h3>爬虫:陈善涛.<h3><br/>"\
+"<h1>人生必须要有目标—计划决定人生 成就未来</h1>"
+from database.ext import DB, Mail
+app.config["MAIL_PORT"] = 465
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'm13057785986@163.com'
+app.config['MAIL_PASSWORD'] = 'a1b2c3'
+app.config['MAIL_DEBUG'] = False
+app.config['MAIL_SERVER'] = 'smtp.163.com'
+# Mail.init_app(app)
+Mail.init_app(app)
 
 #初始化数据库
 with app.app_context():
     from database.models import *
-    from database.ext import DB
+
+
     app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DB_URI
     app.config['HOSTNAME'] = config.HOSTNAME
     app.config['SECRET_KEY'] = config.SECRET_KEY

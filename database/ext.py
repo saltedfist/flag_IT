@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from redis import StrictRedis
-
+from flask_mail import Mail as _Flask_mail, Message
 import config
 
 #redis缓存
@@ -8,6 +8,8 @@ redis_client = StrictRedis(db=config.REDIS_DB, host=config.REDIS_ADDR)
 
 #flask-sqlalchemy,数据库引擎与flask app绑定，请求内有效，线程内无效
 DB = SQLAlchemy()
+Mail = _Flask_mail() if config.MAIL_SERVER else None
+
 
 def commit():
     DB.session.commit()
