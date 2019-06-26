@@ -14,13 +14,15 @@ def index():
             "<h3>爬虫:陈善涛.<h3><br/>"\
 "<h1>人生必须要有目标—计划决定人生 成就未来</h1>"
 from database.ext import DB, Mail
-app.config["MAIL_PORT"] = 465
-app.config['MAIL_USE_TLS'] = True
+# Mail.init_app(app)
+app.config['MAIL_SERVER'] = 'smtp.163.com'
+app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = 'm13057785986@163.com'
 app.config['MAIL_PASSWORD'] = 'a1b2c3'
-app.config['MAIL_DEBUG'] = False
-app.config['MAIL_SERVER'] = 'smtp.163.com'
-# Mail.init_app(app)
+# app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_DEFAULT_SENDER'] = 'm13057785986@163.com'
+app.config['DEBUG'] = False
+app.config['MAIL_USE_SSL'] = True
 Mail.init_app(app)
 
 #初始化数据库

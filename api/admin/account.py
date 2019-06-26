@@ -56,15 +56,20 @@ def send_email():
         error.err_msg = '请填写邮箱'
     verification = create_veri()
     email = info.get('email')
+    # 限制用户发送邮件的次数。
     redis_client.set(email, verification, ex=900)
     msg = {
         's': "WelCome TO Join Us!",
         'r': email,
-        'c': "[FLAG] 尊敬的用户:您的校验码:{0},工作人员不会索取,请勿泄露!".format(verification),
+        'c': "[FLAG]<br>尊敬的用户</br>您的校验码:{0}<br>工作人员不会索取,请勿泄露!</br>\n".format(verification),
     }
-    # 待开发
-    tasks.send_mail(msg)
-
+    send_status = tasks.send_mail(msg)
+    if send_status != 1:
+        error.err_code = 9
+        error.err_msg = '发送邮箱失败!'
+        return error.make_json_response()
+    else:
+        return error.make_json_response()
 # 登陆
 @api.route('/account/log-in', methods=["GET", "POST"])
 def account_login():
