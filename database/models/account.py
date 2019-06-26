@@ -1,4 +1,6 @@
 import time
+
+from api.utils.secret import render_password
 from database.ext import DB
 # from utils.secret import render_password
 
@@ -50,4 +52,9 @@ class Account(DB.Model):
         except Exception as e:
             print(e)
             return False
-
+    @classmethod
+    def check(cls, name, passwd):
+        user = cls.get_user_by_name(name)
+        if not user:
+            return u'{0} is not exists or permission error.'.format(name)
+        return user if user.passwd == render_password(passwd) else u'{0} is not exists or permission error.'.format(name)

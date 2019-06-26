@@ -7,8 +7,6 @@ from utils import tasks
 
 from database.ext import redis_client
 
-
-
 # 注册
 @api.route('/account/register', methods=["GET", "POST"])
 def account_register():
@@ -29,12 +27,12 @@ def account_register():
             error.err_msg = "该用户名已存在"
             return error.make_json_response()
         acc = {'name': name, 'password': pass_word, 'phone': phone, 'email': email}
-        new_verification = redis_client.get(phone)
+        new_verification = redis_client.get(email)
         if new_verification is None:
             error.err_code = 3
             error.err_msg = '请获取邮箱验证码'
             return error.make_json_response()
-        if int(verification) != int(new_verification):
+        if str(verification) != str(new_verification):
             error.err_code = 4
             error.err_msg = '该验证码错误，请尝试重新获取'
             return error.make_json_response()
@@ -70,6 +68,7 @@ def send_email():
         return error.make_json_response()
     else:
         return error.make_json_response()
+
 # 登陆
 @api.route('/account/log-in', methods=["GET", "POST"])
 def account_login():
@@ -87,7 +86,5 @@ def account_login():
         from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
         s = Serializer(b'flag_nb_no_1')
         token = s.dumps({'id': str(user.id)})
-        redis_client.set(token, user.id,  ex=7*24*3600)
-
-        # print(user_uniacs_list)
-        pass
+        redis_client.set(token, user.id,  ex=24*3600)
+        return jsonify({"error": 0, "msg": "登陆成功", "token": str(token, 'utf-8')})
