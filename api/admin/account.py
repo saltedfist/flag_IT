@@ -1,6 +1,6 @@
 from api import api
 from flask import request, jsonify
-from api.utils.secret import create_veri
+from api.utils.secret import create_veri, render_password
 from api.utils.response import Error
 from database.models.user import User
 from  database.models.account import Account
@@ -52,9 +52,16 @@ def send_email():
     info = request.json
     if info is None:
         error.err_code = '9',
-        error.err_msg = '请填写邮箱'
-    verification = create_veri()
+        error.err_msg = '请填写邮箱信息'
     email = info.get('email')
+    verify_email = info.get('verify')
+    if verify_email:
+        check_status = User.check_email(email)
+        if type(check_status) is str:
+            error.err_code = 9
+            error.err_msg = '该邮箱未注册过.'
+            return error.make_json_response()
+    verification = create_veri()
     # 限制用户发送邮件的次数。
     redis_client.set(email, verification, ex=900)
     msg = {
@@ -89,3 +96,43 @@ def account_login():
         token = s.dumps({'id': str(user.id)})
         redis_client.set(token, user.id,  ex=24*3600)
         return jsonify({"error": 0, "msg": "登陆成功", "token": str(token, 'utf-8')})
+
+
+# 忘记密码
+@api.route('/account/forget-passwd', methods = ["POST"])
+def forget_passwd():
+    error = Error(0, '人生需要目标，有了目标才有奋斗的方向!')
+    forget_info = request.json
+    email = forget_info.get('email')
+    passwd = forget_info.get('password')
+    veri_code = forget_info.get('veri_code')
+    if not (passwd and email and veri_code):
+        error.err_code = 9
+        error.err_msg = "参数为空"
+        return error.make_json_response()
+    user = User.get_user_by_email(email)
+    if user is None:
+        error.err_code = 9
+        error.err_msg = '该邮箱填写错误'
+    new_veri_code = redis_client.get(email)
+    if new_veri_code is None:
+        error.err_code = 9
+        error.err_msg = '请获取邮箱验证码'
+        return error.make_json_response()
+    if str(new_veri_code) != str(veri_code):
+        error.err_code = 9
+        error.err_msg = '该验证码错误，请尝试重新获取'
+        return error.make_json_response()
+    passwd = render_password(passwd)
+
+
+    acc = {
+        'password': passwd
+    }
+    add_status = User.update_user(user.id, acc)
+    if add_status:
+        return error.make_json_response()
+    else:
+        error.err_code = 0
+        error.err_msg = "修改成功"
+        return error.make_json_response()

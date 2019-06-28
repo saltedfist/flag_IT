@@ -26,7 +26,14 @@ class User(DB.Model):
     create_time = Column(DateTime)#创建时间
     status = Column(INT, default=0)#类型
     icon = Column(String(256)) # 头像
+    def __init__(self, **kwargs):
+        for k in ['name', 'phone', 'permission', 'status', 'password', 'email']:
+            v = kwargs.get(k)
+            if v:
+                setattr(self, k, v)
 
+        self.passwd = render_password(kwargs.get('password'))
+        self.create_time = current_datetime()
 
     @classmethod
     def get_user_by_name(cls, name):
@@ -41,8 +48,8 @@ class User(DB.Model):
         return cls.query.filter(cls.phone == phone).first()
 
     @classmethod
-    def get_user_by_email(cls, phone):
-        return cls.query.filter(cls.phone == phone).first()
+    def get_user_by_email(cls, email):
+        return cls.query.filter(cls.email == email).first()
 
     @classmethod
     def add_user(cls, kwargs):
@@ -60,3 +67,23 @@ class User(DB.Model):
         if not user:
             return u'{0} is not exists or permission error.'.format(name)
         return user if user.passwd == render_password(passwd) else u'{0} is not exists or permission error.'.format(name)
+
+    @classmethod
+    def check_email(cls, email):
+        user = cls.get_user_by_email(email)
+        if not user:
+            return u'{0} is not exists.'.format(email)
+        else:
+            return 1
+
+    @classmethod
+    def update_user(cls, uid, kwargs):
+        try:
+            DB.session.query(User).filter(
+                User.id == uid
+            ).update(kwargs)
+            DB.session.commit()
+            return True
+        except Exception as e:
+            print(e)
+            return False
