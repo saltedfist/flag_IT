@@ -13,8 +13,8 @@ def current_datetime():
     return time.strftime('%y-%m-%d %H:%M:%S')
 
 
-class Account(DB.Model):
-    __tablename__ = 'account'
+class User(DB.Model):
+    __tablename__ = 'user'
     id = DB.Column(DB.Integer, primary_key=True, autoincrement=True)
     name = DB.Column(DB.String(30), unique=True)#用户名
     phone = DB.Column(DB.String(30), default=None)#手机号
