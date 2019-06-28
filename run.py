@@ -13,7 +13,7 @@ def index():
            "<h3>后端:叶佳,方东东.</h3><br/>" \
             "<h3>爬虫:陈善涛.<h3><br/>"\
 "<h1>人生必须要有目标—计划决定人生 成就未来</h1>"
-from database.ext import DB, Mail
+from database.ext import Mail
 # Mail.init_app(app)
 app.config['MAIL_SERVER'] = 'smtp.163.com'
 app.config['MAIL_PORT'] = 465
@@ -28,7 +28,7 @@ Mail.init_app(app)
 #初始化数据库
 with app.app_context():
     from database.models import *
-
+    from database.ext import DB
 
     app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DB_URI
     app.config['HOSTNAME'] = config.HOSTNAME
