@@ -18,6 +18,8 @@ MAIL_DEFAULT_SENDER = MAIL_USERNAME
 Debug = False
 # 本地
 # SQLALCHEMY_DB_URI = 'mysql+pymysql://root:root@localhost:3306/'
-# SQLALCHEMY_DB_URI = 'mysql+pymysql://root:root123@localhost:3306/'
-SQLALCHEMY_DB_URI = 'mysql+pymysql://root:fdd325802@localhost:3306/'
+# 服务器
+SQLALCHEMY_DB_URI = 'mysql+pymysql://root:root123@localhost:3306/'
+# 公司
+# SQLALCHEMY_DB_URI = 'mysql+pymysql://root:fdd325802@localhost:3306/'
 
