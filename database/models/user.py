@@ -1,7 +1,9 @@
 import time
-
-from api.utils.secret import render_password
 from database.ext import DB
+from sqlalchemy import Column, Integer, DateTime, String, INT
+from sqlalchemy.dialects.mysql import TINYINT,VARCHAR,INTEGER
+from api.utils.secret import render_password
+
 # from utils.secret import render_password
 
 ADMIN_USER_PERMISSION = 1
@@ -15,15 +17,15 @@ def current_datetime():
 
 class User(DB.Model):
     __tablename__ = 'user'
-    id = DB.Column(DB.Integer, primary_key=True, autoincrement=True)
-    name = DB.Column(DB.String(30), unique=True)#用户名
-    phone = DB.Column(DB.String(30), default=None)#手机号
-    email = DB.Column(DB.VARCHAR(254))#邮箱
-    password = DB.Column(DB.String(64))#密码
-    permission = DB.Column(DB.INT, default=NONE_PERMISSION)#权限
-    create_time = DB.Column(DB.DateTime)#创建时间
-    status = DB.Column(DB.INT, default=0)#类型
-    icon = DB.Column(DB.String(256)) # 头像
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(30), unique=True)#用户名
+    phone = Column(String(30), default=None)#手机号
+    email = Column(VARCHAR(254))#邮箱
+    password = Column(String(64))#密码
+    permission = Column(INT, default=NONE_PERMISSION)#权限
+    create_time = Column(DateTime)#创建时间
+    status = Column(INT, default=0)#类型
+    icon = Column(String(256)) # 头像
 
 
     @classmethod

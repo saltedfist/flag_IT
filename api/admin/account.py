@@ -1,8 +1,9 @@
+from api import api
 from flask import request, jsonify
 from api.utils.secret import create_veri
-from api import api
 from api.utils.response import Error
 from database.models.user import User
+from  database.models.account import Account
 from utils import tasks
 
 from database.ext import redis_client
