@@ -13,11 +13,16 @@ from database.ext import redis_client
 def account_register():
     if request.method == 'POST':
         error = Error(0, '人生需要目标，有了目标才有奋斗的方向!')
-        name = request.form.get('name')
-        pass_word = request.form.get('password')
-        phone = request.form.get('phone')
-        email = request.form.get('email')
-        verification = request.form.get('verification')  # 验证码
+        info = request.json
+        if info is None:
+            error.err_code = 9
+            error.err_msg = "参数为空"
+            return error.make_json_response()
+        name = info.get('name')
+        pass_word = info.get('password')
+        phone = info.get('phone')
+        email = info.get('email')
+        verification = request.form.get('verify')  # 验证码
         if not (name and pass_word and phone and email and verification):
             error.err_code = 9
             error.err_msg = "参数为空"
@@ -78,24 +83,26 @@ def send_email():
         return error.make_json_response()
 
 # 登陆
-@api.route('/account/log-in', methods=["GET", "POST"])
+@api.route('/account/login', methods=["POST"])
 def account_login():
-    name = request.form.get('name')
-    password = request.form.get("password")
-    if not name or not password:
-        return jsonify({"error": 1, "msg": "用户名或密码为空"})
+    if request.method == 'POST':
+        json_info = request.json
+        name = json_info.get('name')
+        password = json_info.get("password")
+        if not name or not password:
+            return jsonify({"error": 1, "msg": "用户名或密码为空"})
 
-    if type(User.check(name, password)) is str:
-        return jsonify({"error": 1, "msg": "用户名或密码错误"})
-    else:
-        user = User.get_user_by_name(name)
-        if user.status == 0 or user.status == '0':
-            return jsonify({"error": 2, "msg": "该用户未激活，请联系管理员"})
-        from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-        s = Serializer(b'flag_nb_no_1')
-        token = s.dumps({'id': str(user.id)})
-        redis_client.set(token, user.id,  ex=24*3600)
-        return jsonify({"error": 0, "msg": "登陆成功", "token": str(token, 'utf-8')})
+        if type(User.check(name, password)) is str:
+            return jsonify({"error": 1, "msg": "用户名或密码错误"})
+        else:
+            user = User.get_user_by_name(name)
+            if user.status == 0 or user.status == '0':
+                return jsonify({"error": 2, "msg": "该用户未激活，请联系管理员"})
+            from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+            s = Serializer(b'flag_nb_no_1')
+            token = s.dumps({'id': str(user.id)})
+            redis_client.set(token, user.id,  ex=24*3600)
+            return jsonify({"error": 0, "msg": "登陆成功", "token": str(token, 'utf-8')})
 
 
 # 忘记密码
@@ -105,8 +112,8 @@ def forget_passwd():
     forget_info = request.json
     email = forget_info.get('email')
     passwd = forget_info.get('password')
-    veri_code = forget_info.get('veri_code')
-    if not (passwd and email and veri_code):
+    verify = forget_info.get('verify')
+    if not (passwd and email and verify):
         error.err_code = 9
         error.err_msg = "参数为空"
         return error.make_json_response()
@@ -119,7 +126,7 @@ def forget_passwd():
         error.err_code = 9
         error.err_msg = '请获取邮箱验证码'
         return error.make_json_response()
-    if str(new_veri_code) != str(veri_code):
+    if str(new_veri_code) != str(verify):
         error.err_code = 9
         error.err_msg = '该验证码错误，请尝试重新获取'
         return error.make_json_response()

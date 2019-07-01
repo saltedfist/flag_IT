@@ -57,4 +57,4 @@ app.register_blueprint(api, url_prefix="/api")
 #运行，仅本地运行有效,正式环境下使用uwsgi代理
 if __name__ == '__main__':
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5000)

@@ -19,7 +19,7 @@ Debug = False
 # 本地
 # SQLALCHEMY_DB_URI = 'mysql+pymysql://root:root@localhost:3306/flag'
 # 服务器
-# SQLALCHEMY_DB_URI = 'mysql+pymysql://root:root123@localhost:3306/flag'
+SQLALCHEMY_DB_URI = 'mysql+pymysql://root:root123@localhost:3306/flag'
 # 公司
-SQLALCHEMY_DB_URI = 'mysql+pymysql://root:fdd325802@localhost:3306/flag'
+# SQLALCHEMY_DB_URI = 'mysql+pymysql://root:fdd325802@localhost:3306/flag'
 

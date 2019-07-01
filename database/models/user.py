@@ -25,7 +25,7 @@ class User(DB.Model):
     permission = Column(INT, default=NONE_PERMISSION)#权限
     create_time = Column(DateTime)#创建时间
     status = Column(INT, default=0)#类型
-    icon = Column(String(256)) # 头像
+    icon = Column(String(256), default='') # 头像
     def __init__(self, **kwargs):
         for k in ['name', 'phone', 'permission', 'status', 'password', 'email']:
             v = kwargs.get(k)
