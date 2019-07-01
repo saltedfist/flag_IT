@@ -13,6 +13,18 @@ def index():
            "<h3>后端:叶佳,方东东.</h3><br/>" \
             "<h3>爬虫:陈善涛.<h3><br/>"\
 "<h1>人生必须要有目标—计划决定人生 成就未来</h1>"
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return "<h1>页面不翼而飞啦~</h1>"
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    return "<h1>系统发脾气了~</h1>"
+
+
 from database.ext import Mail
 # Mail.init_app(app)
 app.config['MAIL_SERVER'] = 'smtp.163.com'
@@ -45,4 +57,4 @@ app.register_blueprint(api, url_prefix="/api")
 #运行，仅本地运行有效,正式环境下使用uwsgi代理
 if __name__ == '__main__':
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5001)
