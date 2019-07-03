@@ -26,6 +26,8 @@ class User(DB.Model):
     create_time = Column(DateTime)#创建时间
     status = Column(INT, default=0)#类型
     icon = Column(String(256), default='') # 头像
+    # his_target_id = Column(INT, default='')  # 历史目标id
+    # tar_ing_id = Column(INT, default='')  # 正在进行目标
     def __init__(self, **kwargs):
         for k in ['name', 'phone', 'permission', 'status', 'password', 'email']:
             v = kwargs.get(k)
@@ -61,6 +63,7 @@ class User(DB.Model):
         except Exception as e:
             print(e)
             return False
+
     @classmethod
     def check(cls, name, passwd):
         user = cls.get_user_by_name(name)
