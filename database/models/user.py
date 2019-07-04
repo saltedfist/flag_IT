@@ -25,9 +25,8 @@ class User(DB.Model):
     permission = Column(INT, default=NONE_PERMISSION)#权限
     create_time = Column(DateTime)#创建时间
     status = Column(INT, default=0)#类型
-    icon = Column(String(256), default='') # 头像
-    # his_target_id = Column(INT, default='')  # 历史目标id
-    # tar_ing_id = Column(INT, default='')  # 正在进行目标
+    icon = Column(String(256), default='')# 头像
+
     def __init__(self, **kwargs):
         for k in ['name', 'phone', 'permission', 'status', 'password', 'email']:
             v = kwargs.get(k)
