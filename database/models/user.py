@@ -17,23 +17,22 @@ def current_datetime():
 
 class User(DB.Model):
     __tablename__ = 'user'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(30), unique=True)#用户名
-    phone = Column(String(30), default=None)#手机号
-    email = Column(VARCHAR(254))#邮箱
-    password = Column(String(64))#密码
-    permission = Column(INT, default=NONE_PERMISSION)#权限
-    create_time = Column(DateTime)#创建时间
-    status = Column(INT, default=0)#类型
-    icon = Column(String(256), default='')# 头像
+    id = DB.Column(DB.Integer, primary_key=True, autoincrement=True)
+    name = DB.Column(DB.String(30), unique=True)#用户名
+    phone = DB.Column(DB.String(30), default=None)#手机号
+    email = DB.Column(DB.VARCHAR(254))#邮箱
+    password = DB.Column(DB.String(64))#密码
+    permission = DB.Column(DB.INT, default=NONE_PERMISSION)#权限
+    create_time = DB.Column(DB.DateTime)#创建时间
+    status = DB.Column(DB.INT, default=0)#类型
+    # icon = Column(String(256), default='')# 头像
 
     def __init__(self, **kwargs):
         for k in ['name', 'phone', 'permission', 'status', 'password', 'email']:
             v = kwargs.get(k)
             if v:
                 setattr(self, k, v)
-
-        self.passwd = render_password(kwargs.get('password'))
+        self.password = render_password(kwargs.get('password'))
         self.create_time = current_datetime()
 
     @classmethod
@@ -54,6 +53,8 @@ class User(DB.Model):
 
     @classmethod
     def add_user(cls, kwargs):
+        # kwargs['password'] = render_password(kwargs.get('password'))
+        # kwargs['current_datetime'] = current_datetime()
         item = cls(**kwargs)
         try:
             DB.session.add(item)
@@ -64,11 +65,11 @@ class User(DB.Model):
             return False
 
     @classmethod
-    def check(cls, name, passwd):
-        user = cls.get_user_by_name(name)
+    def check(cls, email, passwd):
+        user = cls.get_user_by_email(email)
         if not user:
-            return u'{0} is not exists or permission error.'.format(name)
-        return user if user.passwd == render_password(passwd) else u'{0} is not exists or permission error.'.format(name)
+            return u'{0} is not exists or permission error.'.format(email)
+        return user if user.password == render_password(passwd) else u'{0} is not exists or permission error.'.format(email)
 
     @classmethod
     def check_email(cls, email):
@@ -76,7 +77,7 @@ class User(DB.Model):
         if not user:
             return u'{0} is not exists.'.format(email)
         else:
-            return 1
+            return 0
 
     @classmethod
     def update_user(cls, uid, kwargs):

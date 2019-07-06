@@ -1,5 +1,6 @@
 import hashlib
 import random
+from base64 import encode
 
 import config
 
@@ -17,6 +18,6 @@ def render_password(pw):
     m = hashlib.sha256()
     m.update(pw.encode('utf8', errors='ignore'))
     m.update(b'jfosm(3%$2";')
-    m.update(config.SECRET_KEY)
+    m.update(config.SECRET_KEY.encode("utf8"))
 
     return m.hexdigest()

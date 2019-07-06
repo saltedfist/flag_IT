@@ -29,10 +29,11 @@ from database.ext import Mail
 # Mail.init_app(app)
 app.config['MAIL_SERVER'] = 'smtp.163.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'm13057785986@163.com'
-app.config['MAIL_PASSWORD'] = 'a1b2c3'
+app.config['MAIL_USERNAME'] = 'lzbp666@163.com'
+app.config['MAIL_PASSWORD'] = 'abc123'
 # app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_DEFAULT_SENDER'] = 'm13057785986@163.com'
+# app.config['MAIL_DEFAULT_SENDER'] = 'm13057785986@163.com'
+app.config['MAIL_DEFAULT_SENDER'] = 'lzbp666@163.com'
 app.config['DEBUG'] = False
 app.config['MAIL_USE_SSL'] = True
 Mail.init_app(app)

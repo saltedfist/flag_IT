@@ -20,10 +20,11 @@ def account_register():
             return error.make_json_response()
         name = info.get('name')
         pass_word = info.get('password')
-        phone = info.get('phone')
+        # phone = info.get('phone')
         email = info.get('email')
-        verification = request.form.get('verify')  # 验证码
-        if not (name and pass_word and phone and email and verification):
+        # verification = request.form.get('verify')
+        verification = info.get('verify')# 验证码
+        if not (name and pass_word and email and verification):
             error.err_code = 9
             error.err_msg = "参数为空"
             return error.make_json_response()
@@ -32,13 +33,13 @@ def account_register():
             error.err_code = 8
             error.err_msg = "该用户名已存在"
             return error.make_json_response()
-        acc = {'name': name, 'password': pass_word, 'phone': phone, 'email': email}
+        acc = {'name': name, 'password': pass_word, 'email': email, 'status': 1}
         new_verification = redis_client.get(email)
         if new_verification is None:
             error.err_code = 3
             error.err_msg = '请获取邮箱验证码'
             return error.make_json_response()
-        if str(verification) != str(new_verification):
+        if str(verification) != str(new_verification, encoding='utf-8'):
             error.err_code = 4
             error.err_msg = '该验证码错误，请尝试重新获取'
             return error.make_json_response()
@@ -59,20 +60,26 @@ def send_email():
         error.err_code = '9',
         error.err_msg = '请填写邮箱信息'
     email = info.get('email')
-    verify_email = info.get('verify')
-    if verify_email:
-        check_status = User.check_email(email)
-        if type(check_status) is str:
-            error.err_code = 9
-            error.err_msg = '该邮箱未注册过.'
-            return error.make_json_response()
+    forget = info.get('forget')
+    # verify_email = info.get('verify')
+    # if verify_email:
+    check_status = User.check_email(email)
+    if type(check_status) is int and forget is None:
+        error.err_code = 9
+        error.err_msg = '该邮箱已注册过.'
+        return error.make_json_response()
+    elif type(check_status) is not int and forget:
+        error.err_code = 9
+        error.err_msg = '该邮箱未注册过,请注册后,登陆.'
+        return error.make_json_response()
     verification = create_veri()
     # 限制用户发送邮件的次数。
-    redis_client.set(email, verification, ex=900)
+    redis_client.set(email, verification)
     msg = {
-        's': "WelCome TO Join Us!",
+        's': "WelCome TO Join Us!,啦啦啦~",
         'r': email,
         'c': "[FLAG]<br>尊敬的用户</br>您的校验码:{0}<br>工作人员不会索取,请勿泄露!</br>\n".format(verification),
+        # 'c': verification
     }
     send_status = tasks.send_mail(msg)
     if send_status != 1:
@@ -87,15 +94,15 @@ def send_email():
 def account_login():
     if request.method == 'POST':
         json_info = request.json
-        name = json_info.get('name')
+        email = json_info.get('email')
         password = json_info.get("password")
-        if not name or not password:
+        if not email or not password:
             return jsonify({"error": 1, "msg": "用户名或密码为空"})
 
-        if type(User.check(name, password)) is str:
+        if type(User.check(email, password)) is str:
             return jsonify({"error": 1, "msg": "用户名或密码错误"})
         else:
-            user = User.get_user_by_name(name)
+            user = User.get_user_by_email(email)
             if user.status == 0 or user.status == '0':
                 return jsonify({"error": 2, "msg": "该用户未激活，请联系管理员"})
             from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -113,7 +120,7 @@ def forget_passwd():
     email = forget_info.get('email')
     passwd = forget_info.get('password')
     verify = forget_info.get('verify')
-    if not (passwd and email and verify):
+    if not (email and verify):
         error.err_code = 9
         error.err_msg = "参数为空"
         return error.make_json_response()
@@ -126,13 +133,11 @@ def forget_passwd():
         error.err_code = 9
         error.err_msg = '请获取邮箱验证码'
         return error.make_json_response()
-    if str(new_veri_code) != str(verify):
+    if str(new_veri_code, encoding='utf-8') != str(verify):
         error.err_code = 9
         error.err_msg = '该验证码错误，请尝试重新获取'
         return error.make_json_response()
     passwd = render_password(passwd)
-
-
     acc = {
         'password': passwd
     }
