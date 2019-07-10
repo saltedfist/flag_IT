@@ -16,7 +16,7 @@ def account_register():
         info = request.json
         if info is None:
             error.err_code = 9
-            error.err_msg = "参数为空"
+            error.err_msg = "参数为空1"
             return error.make_json_response()
         name = info.get('name')
         pass_word = info.get('password')
@@ -26,7 +26,7 @@ def account_register():
         verification = info.get('verify')# 验证码
         if not (name and pass_word and email and verification):
             error.err_code = 9
-            error.err_msg = "参数为空"
+            error.err_msg = "参数为空2"
             return error.make_json_response()
         check_name = User.get_user_by_name(name)
         if check_name:
