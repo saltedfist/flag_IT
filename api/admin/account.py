@@ -81,7 +81,9 @@ def send_email():
         'c': "[FLAG]<br>尊敬的用户</br>您的校验码:{0}<br>工作人员不会索取,请勿泄露!</br>\n".format(verification),
         # 'c': verification
     }
-    send_status = tasks.send_mail(msg)
+    # 停止发送注册，直供开发人员使用
+    # send_status = tasks.send_mail(msg)
+    send_status = 2
     if send_status != 1:
         error.err_code = 9
         error.err_msg = '发送邮箱失败!'
