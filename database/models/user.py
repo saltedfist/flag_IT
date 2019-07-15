@@ -14,17 +14,21 @@ NONE_PERMISSION = 0
 def current_datetime():
     return time.strftime('%y-%m-%d %H:%M:%S')
 
-
+# 用户表
 class User(DB.Model):
-    __tablename__ = 'user'
+    __tablename__ = 'flag_user'
     id = DB.Column(DB.Integer, primary_key=True, autoincrement=True)
     name = DB.Column(DB.String(30), unique=True)#用户名
+    password = DB.Column(DB.String(64))  # 密码
+    openid = DB.Column(DB.VARCHAR(255))# 后期接微信小程序会使用到 openid
+    email = DB.Column(DB.VARCHAR(254))  # 邮箱
     phone = DB.Column(DB.String(30), default=None)#手机号
-    email = DB.Column(DB.VARCHAR(254))#邮箱
-    password = DB.Column(DB.String(64))#密码
+    integral = DB.Column(DB.Integer, default=0)# 积分 (平台内 代金币)
+    money = DB.Column(DB.Integer, default=0)# rmb 用户金额
     permission = DB.Column(DB.INT, default=NONE_PERMISSION)#权限
     create_time = DB.Column(DB.DateTime)#创建时间
-    status = DB.Column(DB.INT, default=0)#类型
+    update_time = DB.Column(DB.DateTime)# 更新时间
+    status = DB.Column(DB.INT, default=0)# 状态：默认1：正常
     # icon = Column(String(256), default='')# 头像
 
     def __init__(self, **kwargs):
