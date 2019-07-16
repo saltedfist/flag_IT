@@ -6,6 +6,9 @@ from api.utils.secret import render_password
 
 
 # 目标
+from database.models.api_docs import current_datetime
+
+
 class Target_Info(DB.Model):
     __tablename__ = 'flag_target_info'
     # 此处缺少目标完成时间算出最大休假时间及最小休假时间
@@ -27,3 +30,31 @@ class Target_Info(DB.Model):
     gold_type = DB.Column(DB.Integer, default=1) #挑战金额类型默认1：金额   2：积分
     start_time = DB.Column(DB.DateTime) # 开始时间
     end_time = DB.Column(DB.DateTime) # 结束时间
+
+
+    def __init__(self, **kwargs):
+        for k in [
+            'target_name', 'number_of_days', 'day_off', 'annotation', 'challenge_gold', 'insist_day', 'privacy', 'reminder_time', 'pay_type', 'gold_type'
+        ]:
+            v = kwargs.get(k)
+            if v:
+                setattr(self, k, v)
+        self.create_time = current_datetime()
+        self.status = 0
+
+
+    @classmethod
+    def add(cls, kwargs):
+        item = cls(**kwargs)
+        try:
+            DB.session.add(item)
+            DB.session.commit()
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    @classmethod
+    def get_target_info_by_uid(cls, uid):
+        target_info = DB.session.query(cls).filter(cls.uid == uid).all()
+        return target_info

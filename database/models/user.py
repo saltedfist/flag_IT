@@ -55,8 +55,6 @@ class User(DB.Model):
 
     @classmethod
     def add_user(cls, kwargs):
-        # kwargs['password'] = render_password(kwargs.get('password'))
-        # kwargs['current_datetime'] = current_datetime()
         item = cls(**kwargs)
         try:
             DB.session.add(item)
