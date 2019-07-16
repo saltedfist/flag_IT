@@ -1,7 +1,5 @@
 from database.ext import DB
-
-
-
+from database.models.api_docs import current_datetime
 
 
 class Like(DB.Model):
@@ -14,3 +12,23 @@ class Like(DB.Model):
     create_time = DB.Column(DB.DateTime)  # 创建时间
     update_time = DB.Column(DB.DateTime) # 更新时间
     status = DB.Column(DB.INT, default=1)  # 状态：默认1；正常  2：取消
+
+    def __init__(self, **kwargs):
+        for k in [
+            'related_id', 'by_uid', 'comment_id', 'type', 'status', 'uid'
+        ]:
+            v = kwargs.get(k)
+            if v:
+                setattr(self, k, v)
+        self.create_time = current_datetime()
+
+    @classmethod
+    def add(cls, kwargs):
+        item = cls(**kwargs)
+        try:
+            DB.session.add(item)
+            DB.session.commit()
+            return True
+        except Exception as e:
+            print(e)
+            return False
