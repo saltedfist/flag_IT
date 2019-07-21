@@ -1,9 +1,4 @@
-import time
 from database.ext import DB
-from sqlalchemy import Column, Integer, DateTime, String, INT
-from sqlalchemy.dialects.mysql import TINYINT,VARCHAR,INTEGER
-from api.utils.secret import render_password
-
 
 # 目标
 from database.models.api_docs import current_datetime
@@ -26,7 +21,7 @@ class Target_Info(DB.Model):
     modified_time = DB.Column(DB.DateTime)  # 修改时间
     reminder_time = DB.Column(DB.VARCHAR(30))  # 提醒时间
     pay_type = DB.Column(DB.VARCHAR(255))  # 支付类型 默认1：支付宝 2：微信 3：用户余额，4：积分
-    status = DB.Column(DB.TINYINT, default=1)  # 目标状态 0 正在进行,1 成功, 2 失败
+    status = DB.Column(DB.Integer, default=1)  # 目标状态 0 正在进行,1 成功, 2 失败
     gold_type = DB.Column(DB.Integer, default=1) #挑战金额类型默认1：金额   2：积分
     start_time = DB.Column(DB.DateTime) # 开始时间
     end_time = DB.Column(DB.DateTime) # 结束时间

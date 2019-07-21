@@ -3,6 +3,7 @@ from flask import request, jsonify
 from api.utils.secret import create_veri, render_password
 from api.utils.response import Error
 from database.models.target import Target_Info
+from database.models.timing_task import Timing_Task
 from database.models.user import User
 from  database.models.account import Account
 from database.redis_ut.func import verify_token
@@ -36,7 +37,7 @@ def target_add():
     challenge_gold = json_data.get('challenge_gold')
     insist_day = json_data.get('insist_day') if json_data.get('insist_day') else 0
     privacy = json_data.get('privacy') if json_data.get('privacy') else 1
-    reminder_time = json_data.get('reminder_time')# 提醒时间另外提供接口
+    reminder_time = json_data.get('reminder_time')# 提醒时间另外提供接口 # 提示时间前端传时间戳字符串
     pay_type = json_data.get('pay_type')  # 付钱有另外的接口提供.
     gold_type = json_data.get('gold_type')
     start_time = json_data.get('start_time')
@@ -57,8 +58,14 @@ def target_add():
         'gold_type': gold_type,
         'start_time': start_time
     }
+    task_data = {
+        'uid': uid,
+        'type': 1,
+        'tk_time': reminder_time,
+    }
+    tk_status = Timing_Task.add(task_data) # 将提示时间加入定时表.
     add_status = Target_Info.add(target_data)
-    if add_status is True:
+    if (add_status and tk_status) is True:
         return error.make_json_response()
     error.err_code = 9
     error.err_msg = '建立目标失败,请重新提交.'
