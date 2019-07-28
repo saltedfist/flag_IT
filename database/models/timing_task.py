@@ -1,7 +1,7 @@
 from database.ext import DB
 from database.models.api_docs import current_datetime
 
-
+# 弃用
 class Timing_Task(DB.Model):
     __tablename__ = 'flag_timing_task'
     id = DB.Column(DB.Integer, primary_key=True, autoincrement=True, nullable=False) # 定时任务id

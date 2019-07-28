@@ -11,7 +11,8 @@ class Target_Info(DB.Model):
     uid = DB.Column(DB.Integer, primary_key=True, nullable=False)  # 用户id
     target_name = DB.Column(DB.VARCHAR(255), nullable=False)# 目标标题
     number_of_days = DB.Column(DB.Integer, nullable=False)  # 目标完成天数
-    day_off = DB.Column(DB.VARCHAR(255), nullable=False)  # 休假时间
+    day_off = DB.Column(DB.Integer, nullable=False)  # 休假时间
+    surplus_day_off = DB.Column(DB.Integer, nullable=False)  # 剩余休假时间
     # sign_time = Column(DateTime, nullable=False)# 签到时间
     annotation = DB.Column(DB.VARCHAR(255))  # 备注
     challenge_gold = DB.Column(DB.INT, default=0)  # 挑战金额（积分）  最低金额 100分，积分：100

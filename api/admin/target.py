@@ -11,7 +11,8 @@ from utils import tasks
 
 from database.ext import redis_client
 
-@api.route('/target/add',methods=["POST"])
+# 添加目标
+@api.route('/target/add', methods=["POST"])
 def target_add():
     error = Error(0, '建立目标成功')
     token = request.headers.get("Access-Token")
@@ -37,7 +38,7 @@ def target_add():
     challenge_gold = json_data.get('challenge_gold')
     insist_day = json_data.get('insist_day') if json_data.get('insist_day') else 0
     privacy = json_data.get('privacy') if json_data.get('privacy') else 1
-    reminder_time = json_data.get('reminder_time')# 提醒时间另外提供接口 # 提示时间前端传时间戳字符串
+    reminder_time = json_data.get('reminder_time')
     pay_type = json_data.get('pay_type')  # 付钱有另外的接口提供.
     gold_type = json_data.get('gold_type')
     start_time = json_data.get('start_time')
@@ -63,16 +64,18 @@ def target_add():
         'type': 1,
         'tk_time': reminder_time,
     }
-    tk_status = Timing_Task.add(task_data) # 将提示时间加入定时表.
+    # tk_status = Timing_Task.add(task_data) # 将提示时间加入定时表.
     add_status = Target_Info.add(target_data)
-    if (add_status and tk_status) is True:
+    if add_status is True:
         return error.make_json_response()
     error.err_code = 9
     error.err_msg = '建立目标失败,请重新提交.'
     return error.make_json_response()
-@api.route('/target/history',methods=['GET'])
+
+# 查看历史目标
+@api.route('/target/history', methods=['GET'])
 def target_history():
-    error = Error(0, '建立目标成功')
+    error = Error(0, 'success')
     token = request.headers.get("Access-Token")
     if not token:
         error.err_code = 9
