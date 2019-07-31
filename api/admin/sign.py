@@ -1,6 +1,7 @@
 from flask import request
 from api import api
 from api.utils.response import Error
+from database.models.target import Target_Info
 from database.models.user import User
 from database.models.sign import Sign
 from database.redis_ut.func import verify_token
@@ -8,7 +9,7 @@ from database.redis_ut.func import verify_token
 
 # 签到只有添加功能,业务逻辑以及判断未开发.
 @api.route('/sign/add', methods=["POST"])
-def target_add():
+def sign_add():
     error = Error(0, '签到成功')
     token = request.headers.get("Access-Token")
     if not token:
@@ -36,7 +37,13 @@ def target_add():
         error.err_code = 9
         error.err_msg = "提交数据缺失,请确认后重新提交."
         return error.make_json_response()
-    target_data = {
+    target = Target_Info.change_target(target_id, uid)
+    if target is False:
+        error.err_code = 9
+        error.err_msg = '提交参数错误!,请确认后重新提交!'
+        return error.make_json_response()
+
+    sign_data = {
         'target_name': target_name,
         'target_id': target_id,
         'content': content,
@@ -45,9 +52,10 @@ def target_add():
         'status': status,
         'uid': uid
     }
-    add_status = Sign.add(target_data)
+    add_status = Sign.add(sign_data)
+
     if add_status is True:
         return error.make_json_response()
     error.err_code = 9
-    error.err_msg = '建立目标失败,请重新提交.'
+    error.err_msg = '签到失败,请重新提交!'
     return error.make_json_response()

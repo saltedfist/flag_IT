@@ -16,7 +16,7 @@ class Target_Info(DB.Model):
     # sign_time = Column(DateTime, nullable=False)# 签到时间
     annotation = DB.Column(DB.VARCHAR(255))  # 备注
     challenge_gold = DB.Column(DB.INT, default=0)  # 挑战金额（积分）  最低金额 100分，积分：100
-    insist_day = DB.Column(DB.INT)# 当前坚持天数
+    insist_day = DB.Column(DB.INT, default=0)# 当前坚持天数
     privacy = DB.Column(DB.INT)  # 是否公开,1公开,2隐私
     create_time = DB.Column(DB.DateTime)  # 创建时间
     modified_time = DB.Column(DB.DateTime)  # 修改时间
@@ -51,6 +51,26 @@ class Target_Info(DB.Model):
             return False
 
     @classmethod
-    def get_target_info_by_uid(cls, uid):
+    def get_target_info_by_uid(cls, uid: int):
         target_info = DB.session.query(cls).filter(cls.uid == uid).all()
         return target_info
+
+    @classmethod
+    def change_target(cls, target_id: int, uid: int):
+        target = DB.session.query(cls).filter(cls.target_id == target_id, cls.status == 0).one_or_none()
+        if target.id != uid:
+            return False
+        if target.insist_day + 1 >= target.number_of_days:
+            target.status = 1
+            # 挑战成功: 缺少给用户加金币,或者退还钱逻辑. 还需要在user表中 对积分或者rmb 进行修改.
+            if target.gold_type == 1: #1：金额   2：积分 待rmb与积分表建完,再完善逻辑.
+                pass
+            elif target.gold_type == 2:
+                pass
+            else:
+                return False
+        else:
+            # 待完成.
+            target.insist_day = target.insist_day + 1
+        DB.session.commint()
+        return True

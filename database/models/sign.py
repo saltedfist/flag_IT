@@ -1,8 +1,4 @@
-import time
 from database.ext import DB
-from sqlalchemy import Column, Integer, DateTime, String, INT
-from sqlalchemy.dialects.mysql import TINYINT,VARCHAR,INTEGER
-from api.utils.secret import render_password
 
 
 # 签到
