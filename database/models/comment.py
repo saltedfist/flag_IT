@@ -8,7 +8,7 @@ from database.models.api_docs import current_datetime
 
 
 class Comment(DB.Model):
-    __tablename__ = 'comment'
+    __tablename__ = 'flag_comment'
     id = DB.Column(DB.Integer, primary_key=True, autoincrement=True)# 评论id
     sign_id = DB.Column(DB.String(30), default=None)  # 签到表ID
     uid = DB.Column(DB.Integer, primary_key=True, nullable=False)  # 评论用户ID
