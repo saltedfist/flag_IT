@@ -7,7 +7,7 @@ from database.models.sign import Sign
 from database.redis_ut.func import verify_token
 
 
-# 签到只有添加功能,业务逻辑以及判断未开发.
+# 签到只有添加功能,业务逻辑已开发.(未测试)
 @api.route('/sign/add', methods=["POST"])
 def sign_add():
     error = Error(0, '签到成功')

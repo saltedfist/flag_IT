@@ -2,6 +2,10 @@ from database.ext import DB
 
 # 目标
 from database.models.api_docs import current_datetime
+from database.models.integral_detail import Integral_Detail
+from database.models.money_detail import Money_Detail
+from database.models.user import User
+from utils import timemac
 
 
 class Target_Info(DB.Model):
@@ -57,20 +61,55 @@ class Target_Info(DB.Model):
 
     @classmethod
     def change_target(cls, target_id: int, uid: int):
+
         target = DB.session.query(cls).filter(cls.target_id == target_id, cls.status == 0).one_or_none()
         if target.id != uid:
             return False
+        challenge_gold = target.challenge_gold
+        gold_type = target.gold_type
+        target_id = target.id
         if target.insist_day + 1 >= target.number_of_days:
             target.status = 1
+            target.end_time = timemac.today()
+            DB.session.commit()
             # 挑战成功: 缺少给用户加金币,或者退还钱逻辑. 还需要在user表中 对积分或者rmb 进行修改.
-            if target.gold_type == 1: #1：金额   2：积分 待rmb与积分表建完,再完善逻辑.
-                pass
-            elif target.gold_type == 2:
-                pass
+            user = User.get_user_by_id(uid)
+            user.update_time = timemac.today()
+            if gold_type == 1: #1：金额   2：积分 待rmb与积分表建完,再完善逻辑.
+                user.money = user.money + challenge_gold
+                DB.session.commit()
+                temp = {
+                    'uid': user.id,
+                    'money': user.money,
+                    'type': 1,
+                    'status': 1,
+                    'target_id': target_id,
+                    'create_time': timemac.today(),
+                    'source_info': 1
+                }
+                add_status = Money_Detail.add_money_detail(temp)
+                if add_status is False:
+                    return False
+                return True
+            elif gold_type == 2:
+                user.money = user.integral + target.challenge_gold
+                DB.session.commit()
+                temp = {
+                    'uid': user.id,
+                    'money': user.money,
+                    'type': 1,
+                    'status': 1,
+                    'target_id': target_id,
+                    'create_time': timemac.today(),
+                    'source_info': 1
+                }
+                add_status = Integral_Detail.add_integral_detail(temp)
+                if add_status is False:
+                    return False
+                return True
             else:
                 return False
         else:
-            # 待完成.
             target.insist_day = target.insist_day + 1
         DB.session.commint()
         return True
