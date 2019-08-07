@@ -53,11 +53,19 @@ class Target_Info(DB.Model):
         except Exception as e:
             print(e)
             return False
+    def to_dict(self):
+        data = self.__dict__
+        data.pop('_sa_instance_state')
+        return data
 
     @classmethod
     def get_target_info_by_uid(cls, uid: int):
         target_info = DB.session.query(cls).filter(cls.uid == uid).all()
-        return target_info
+        def merge_info_dict(item):
+            item_dict = item.to_dict()
+            return item_dict
+        target_dict = (map(merge_info_dict, target_info))
+        return target_dict
 
     @classmethod
     def change_target(cls, target_id: int, uid: int):
@@ -113,3 +121,20 @@ class Target_Info(DB.Model):
             target.insist_day = target.insist_day + 1
         DB.session.commint()
         return True
+
+    @classmethod
+    def update_target(cls, uid, target_id, kwargs):
+        try:
+            DB.session.query(Target_Info).filter(
+                Target_Info.id == int(target_id)
+                and Target_Info.admin_id == uid
+            ).update(kwargs)
+            DB.session.commit()
+            return True
+        except Exception as e:
+            print(e)
+            return False
+    @classmethod
+    def get_target_one_info(cls, uid, target_id):
+        target_info = DB.session.query(cls).filter(cls.uid == uid, cls.id == target_id).one_or_none()
+        return target_info

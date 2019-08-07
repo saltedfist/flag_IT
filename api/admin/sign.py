@@ -7,7 +7,7 @@ from database.models.sign import Sign
 from database.redis_ut.func import verify_token
 
 
-# 签到只有添加功能,业务逻辑已开发.(未测试)
+# 签到,业务逻辑已开发.(未测试)
 @api.route('/sign/add', methods=["POST"])
 def sign_add():
     error = Error(0, '签到成功')
@@ -59,3 +59,8 @@ def sign_add():
     error.err_code = 9
     error.err_msg = '签到失败,请重新提交!'
     return error.make_json_response()
+
+
+"""
+签到内容显示,签到下的评论,点赞,(需要涉及的连表查询)
+"""

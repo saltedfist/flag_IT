@@ -46,6 +46,8 @@ def target_add():
         error.err_code = 9
         error.err_msg = "提交数据缺失,请确认后重新提交."
         return error.make_json_response()
+
+    # 缺少判断,之前是否存在未完成flag. 是否让用户有且仅能立一个flag的问题还需再讨论.
     target_data = {
         'target_name': target_name,
         'number_of_days': number_of_days,
@@ -90,5 +92,43 @@ def target_history():
     return target_info
 
 
+# 设置是否公开
+@api.route('/target/set-privacy', methods=['GET'])
+def set_privacy():
+    error = Error(0, 'success')
+    token = request.headers.get("Access-Token")
+    if not token:
+        error.err_code = 9
+        error.err_msg = "token is None"
+        return error.make_json_response()
+    uid = verify_token(token)
+    if uid is None:
+        error.err_code = 8
+        error.err_msg = "token error"
+        return error.make_json_response()
+    target_id = int(request.args.get('target_id')) if request.args.get('target_id') else 0
+    privacy_status = int(request.args.get('privacy_status')) if request.args.get('target_id') else 0
+    if all([target_id, privacy_status]):
+        error.err_code = 7
+        error.err_msg = '参数缺失,提交失败!'
+        return error.make_json_response()
+    target = Target_Info.get_target_one_info(uid, target_id)
+    if target is None:
+        error.err_code = 6
+        error.err_msg = '未找该flag,请确认后提交!'
+        return error.make_json_response()
+
+    update_data = {
+        'privacy': privacy_status,
+    }
+    update_status = Target_Info.update_target(uid, target_id, update_data)
+    if update_status:
+        return error.make_json_response()
+    else:
+        error.err_code = 5
+        error.err_msg = '提交失败,请重试!'
+        return error.make_json_response()
+
+# 是否开设修改休假时间(待讨论)
 
 
